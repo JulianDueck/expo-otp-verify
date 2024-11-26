@@ -1,0 +1,15 @@
+{
+  "platforms": [
+    "android"
+  ],
+  "apple": {
+    "modules": [
+      "ExpoOtpVerifyModule"
+    ]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.otpverify.ExpoOtpVerifyModule"
+    ]
+  }
+}
