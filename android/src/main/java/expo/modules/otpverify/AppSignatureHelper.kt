@@ -29,8 +29,6 @@ class AppSignatureHelper(context: Context?) : ContextWrapper(context) {
                     PackageManager.GET_SIGNING_CERTIFICATES
                 ).signingInfo
 
-                Log.d("SIGNATURE", signature.toString())
-
                 val signatures = signature?.apkContentsSigners
 
                 if (signatures != null) {

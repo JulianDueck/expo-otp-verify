@@ -16,7 +16,6 @@ class OtpBroadcastReceiver(context: AppContext?, expoOtpVerifyModule: ExpoOtpVer
     private val expoModule = expoOtpVerifyModule
 
     private fun receiveMessage(message: String?) {
-        Log.d("SMS xddd", message ?: "nope")
         if (mContext == null || !mContext.hasActiveReactInstance) {
             return
         }
@@ -25,11 +24,9 @@ class OtpBroadcastReceiver(context: AppContext?, expoOtpVerifyModule: ExpoOtpVer
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val o = intent?.action
-        Log.d("SMS", o ?: "nothing")
         if (SmsRetriever.SMS_RETRIEVED_ACTION == o) {
             val extras = intent.extras ?: return
             val status: Status = extras.get(SmsRetriever.EXTRA_STATUS) as Status ?: return
-            Log.d("SMS", status.statusCode.toString())
             when (status.statusCode) {
                 CommonStatusCodes.SUCCESS -> {
                     val message = extras.getString(SmsRetriever.EXTRA_SMS_MESSAGE)

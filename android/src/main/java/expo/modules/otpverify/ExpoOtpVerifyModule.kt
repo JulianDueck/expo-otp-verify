@@ -52,17 +52,14 @@ class ExpoOtpVerifyModule : Module() {
     }
 
     OnCreate {
-      Log.d("SMS", "onCreate")
       registerReceiverIfNecessary(mReceiver)
     }
 
     OnDestroy {
-      Log.d("SMS", "OnDestroy")
       unregisterReceiver(mReceiver)
     }
 
     OnActivityDestroys {
-      Log.d("SMS", "OnActivityDestroys")
       unregisterReceiver(mReceiver)
     }
 
