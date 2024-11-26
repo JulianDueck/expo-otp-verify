@@ -22,10 +22,8 @@ export function getHash(): string[] {
   return ExpoOtpVerifyModule.getHash();
 }
 
-const emitter = new EventEmitter();
-
 export function addOtpListener(
   listener: (value: string) => any,
 ): EventSubscription {
-  return emitter.addListener("onOtpReceived", listener);
+  return ExpoOtpVerifyModule.addListener("onOtpReceived", listener);
 }
