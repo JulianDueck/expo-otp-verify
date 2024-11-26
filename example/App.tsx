@@ -1,30 +1,31 @@
-import { useEvent } from "expo";
-import ExpoOtpVerify from "expo-otp-verify";
+import * as Clipboard from "expo-clipboard";
+import { useOtpVerify } from "expo-otp-verify";
 import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 export default function App() {
-  const onChangePayload = useEvent(ExpoOtpVerify, "onChange");
+  const { hash, otp, message, timeoutError } = useOtpVerify({
+    numberOfDigits: 6,
+  });
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
         <Text style={styles.header}>Module API Example</Text>
-        <Group name="Constants">
-          <Text>{ExpoOtpVerify.PI}</Text>
-        </Group>
-        <Group name="Functions">
-          <Text>{ExpoOtpVerify.hello()}</Text>
-        </Group>
-        <Group name="Async functions">
+        <Group name="Hash">
+          <Text>{hash}</Text>
           <Button
-            title="Set value"
-            onPress={async () => {
-              await ExpoOtpVerify.setValueAsync("Hello from JS!");
-            }}
+            title="Copy to clipboard"
+            onPress={() => Clipboard.setStringAsync(hash?.toString() ?? "")}
           />
         </Group>
-        <Group name="Events">
-          <Text>{onChangePayload?.value}</Text>
+        <Group name="OTP">
+          <Text>{otp}</Text>
+        </Group>
+        <Group name="Message">
+          <Text>{message}</Text>
+        </Group>
+        <Group name="Timeout">
+          <Text>{timeoutError ? "true" : "false"}</Text>
         </Group>
       </ScrollView>
     </SafeAreaView>

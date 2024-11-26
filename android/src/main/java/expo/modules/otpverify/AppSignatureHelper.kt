@@ -29,8 +29,16 @@ class AppSignatureHelper(context: Context?) : ContextWrapper(context) {
                     PackageManager.GET_SIGNING_CERTIFICATES
                 ).signingInfo
 
-                val hash = hash(packageName, signature.toString())
-                hash?.let { appCodes.add(it) }
+                Log.d("SIGNATURE", signature.toString())
+
+                val signatures = signature?.apkContentsSigners
+
+                if (signatures != null) {
+                    for (s in signatures) {
+                        val hash = hash(packageName, s.toCharsString())
+                        hash?.let { appCodes.add(it) }
+                    }
+                }
 
             } else {
                 val signatures = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures

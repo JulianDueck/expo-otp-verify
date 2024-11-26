@@ -1,6 +1,7 @@
 package expo.modules.otpverify
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.Context
 import android.content.IntentFilter
 import android.os.Build
@@ -17,18 +18,22 @@ class ExpoOtpVerifyModule : Module() {
     Name("ExpoOtpVerify")
 
     val mReceiver = OtpBroadcastReceiver(appContext, this@ExpoOtpVerifyModule)
-    var isReceiverRegistered: Boolean = false
+    var isReceiverRegistered = false
     val tag = ExpoOtpVerifyModule::class.java.simpleName
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     fun registerReceiverIfNecessary(receiver: OtpBroadcastReceiver) {
+      if (appContext.currentActivity == null) {
+        return
+      }
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-              appContext.reactContext?.registerReceiver(receiver, IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION), SmsRetriever.SEND_PERMISSION, null, Context.RECEIVER_EXPORTED)
+              appContext.currentActivity?.registerReceiver(receiver, IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION), SmsRetriever.SEND_PERMISSION, null, Context.RECEIVER_EXPORTED)
             } else {
-              appContext.reactContext?.registerReceiver(receiver, IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION))
+              appContext.currentActivity?.registerReceiver(receiver, IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION))
             }
             isReceiverRegistered = true
+            Log.d(tag, "Receiver registered")
         } catch (e: Exception) {
           e.printStackTrace();
         }
@@ -37,7 +42,7 @@ class ExpoOtpVerifyModule : Module() {
     fun unregisterReceiver(receiver: OtpBroadcastReceiver) {
       if (isReceiverRegistered) {
         try {
-          appContext.reactContext?.unregisterReceiver(receiver)
+          appContext.currentActivity?.unregisterReceiver(receiver)
           Log.d(tag, "Receiver unregistered")
           isReceiverRegistered = false
         } catch (e: Exception) {
@@ -47,22 +52,17 @@ class ExpoOtpVerifyModule : Module() {
     }
 
     OnCreate {
+      Log.d("SMS", "onCreate")
       registerReceiverIfNecessary(mReceiver)
     }
 
     OnDestroy {
-      unregisterReceiver(mReceiver)
-    }
-
-    OnActivityEntersForeground {
-      registerReceiverIfNecessary(mReceiver)
-    }
-
-    OnActivityEntersBackground {
+      Log.d("SMS", "OnDestroy")
       unregisterReceiver(mReceiver)
     }
 
     OnActivityDestroys {
+      Log.d("SMS", "OnActivityDestroys")
       unregisterReceiver(mReceiver)
     }
 
@@ -80,23 +80,23 @@ class ExpoOtpVerifyModule : Module() {
       }
       val task = client.startSmsRetriever()
       task.addOnCanceledListener {
-        Log.e(tag, "sms listener cancelled")
+        Log.i(tag, "sms listener cancelled")
       }
       task.addOnCompleteListener {
-        Log.e(tag, "sms listener complete")
+        Log.i(tag, "sms listener complete")
       }
       task.addOnSuccessListener {
-        Log.e(tag, "started sms listener")
+        Log.i(tag, "started sms listener")
         promise.resolve(true)
       }
       task.addOnFailureListener {
         e ->
-        Log.e(tag, "Could not start sms listener $e")
+        Log.i(tag, "Could not start sms listener $e")
         promise.reject(e.toCodedException())
       }
     }
 
-    Events("onOtpReceived", "onTimeOut")
+    Events("onOtpReceived")
 
   }
 }
