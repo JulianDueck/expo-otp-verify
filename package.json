@@ -19,7 +19,8 @@
     "react-native",
     "expo",
     "expo-otp-verify",
-    "ExpoOtpVerify"
+    "ExpoOtpVerify",
+    "otp"
   ],
   "repository": "https://github.com/JulianDueck/expo-otp-verify",
   "bugs": {
